@@ -1,5 +1,6 @@
 import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {deleteData, editData, getData, setData} from "../services/api";
 
 export default function MainForm() {
@@ -10,19 +11,49 @@ export default function MainForm() {
   const [telefone, setTelefone] = useState("");
   const [necessidade, setNecessidade] = useState("");
   const [npcasa, setNpcasa] = useState("");
-  const [pcd, setPcd] = useState("");
+  const [pcd, setPcd] = useState(false);
   const [profissao, setProfissao] = useState("");
   const [resp, setResp] = useState("");
   const [situacao, setSituacao] = useState("");
+  const navigate = useNavigate();
 
+  
   useEffect(()=>{
-    getData().then(result=>{
-      console.log(result)
-    })
+    if(!!window.location.pathname.split('/')[2]){
+      getData().then(result=>{
+        for(let i=0;i<result.length;i++){
+          if(result[i].id==window.location.pathname.split('/')[2]){
+            setNome(result[i].data.nome)
+            setCpf(result[i].data.cpf)
+            setRg(result[i].data.rg)
+            setEndereco(result[i].data.endereco)
+            setTelefone(result[i].data.telefone)
+            setNecessidade(result[i].data.necessidade)
+            setNpcasa(result[i].data.np_casa)
+            setPcd(result[i].data.pcd)
+            setProfissao(result[i].data.profissao)
+            setResp(result[i].data.resp_cad)
+            setSituacao(result[i].data.situacao)
+          }
+        }
+      })
+    }
+    if(!window.location.pathname.split('/')[2]){
+            setNome("")
+            setCpf("")
+            setRg("")
+            setEndereco("")
+            setTelefone("")
+            setNecessidade("")
+            setNpcasa("")
+            setPcd(false)
+            setProfissao("")
+            setResp("")
+            setSituacao("")
+    }
   },[])
 
-    function getDate(){
-
+    function setDate(){
       let data={
         "nome": nome,
         "cpf":cpf,
@@ -39,33 +70,31 @@ export default function MainForm() {
 
       setData(data).then(result=>{
         console.log("ok")
+      
       })
+      navigate('/pessoas')
     }
 
     return (
       <div>
         <div className="fields">
-          <TextField className="nome" label="Nome" variant="outlined" value={nome} onChange={(e)=>{setNome(e.target.value)}}/>
+          <TextField className="nome" disabled={!!window.location.pathname.split('/')[2]} label="Nome" variant="outlined" value={nome} onChange={(e)=>{setNome(e.target.value)}}/>
         </div>
         <div className="fields">
-          <TextField className="endereco" label="Endereço" variant="outlined" value={endereco} onChange={(e)=>{setEndereco(e.target.value)}}/>
+          <TextField className="endereco" disabled={!!window.location.pathname.split('/')[2]} label="Endereço" variant="outlined" value={endereco} onChange={(e)=>{setEndereco(e.target.value)}}/>
         </div>
         <div className="fields">
-        <TextField className="cpf" label="Cpf" variant="outlined" value={cpf} onChange={(e)=>{setCpf(e.target.value)}}/>
-        <TextField className="rg" label="Rg" variant="outlined" value={rg} onChange={(e)=>{setRg(e.target.value)}}/>
-        <TextField className="telefone" label="Telefone" variant="outlined" value={telefone} onChange={(e)=>{setTelefone(e.target.value)}}/>
+          <TextField className="cpf" disabled={!!window.location.pathname.split('/')[2]} label="Cpf" variant="outlined" value={cpf} onChange={(e)=>{setCpf(e.target.value)}}/>
+          <TextField className="rg" disabled={!!window.location.pathname.split('/')[2]} label="Rg" variant="outlined" value={rg} onChange={(e)=>{setRg(e.target.value)}}/>
+          <TextField className="telefone" disabled={!!window.location.pathname.split('/')[2]} label="Telefone" variant="outlined" value={telefone} onChange={(e)=>{setTelefone(e.target.value)}}/>
+          <TextField className="profissao" disabled={!!window.location.pathname.split('/')[2]} label="Profissão" variant="outlined" value={profissao} onChange={(e)=>{setProfissao(e.target.value)}}/>
+          <TextField className="necessidade" disabled={!!window.location.pathname.split('/')[2]} label="Necessidade" variant="outlined" value={necessidade} onChange={(e)=>{setNecessidade(e.target.value)}}/>
+          <TextField className="situacao" disabled={!!window.location.pathname.split('/')[2]} label="Situação" variant="outlined" value={situacao} onChange={(e)=>{setSituacao(e.target.value)}}/>
+          <TextField className="nump" disabled={!!window.location.pathname.split('/')[2]} label="Número de Pessoas na Casa" variant="outlined" value={npcasa} onChange={(e)=>{setNpcasa(e.target.value)}}/>
+          <TextField className="resp" disabled={!!window.location.pathname.split('/')[2]} label="Responsável pelo cadastro" variant="outlined"onChange={(e)=>{setResp(e.target.value)}}/>
+          <FormControlLabel  disabled={!!window.location.pathname.split('/')[2]} control={<Switch checked={pcd} onChange={(e)=>{setPcd(!pcd)}} />} className="pcd" label="Pcd?" sx={{color:"black"}} />
         </div>
-        <div className="fields">
-          <TextField className="profissao" label="Profissão" variant="outlined" value={profissao} onChange={(e)=>{setProfissao(e.target.value)}}/>
-          <TextField className="necessidade" label="Necessidade" variant="outlined" value={necessidade} onChange={(e)=>{setNecessidade(e.target.value)}}/>
-          <TextField className="situacao" label="Situação" variant="outlined" value={situacao} onChange={(e)=>{setSituacao(e.target.value)}}/>
-        </div>
-        <div className="fields">
-          <TextField className="nump" label="N d Pessoas na Casa" variant="outlined" value={npcasa} onChange={(e)=>{setNpcasa(e.target.value)}}/>
-          <TextField className="resp" label="Responsavel pelo cadastro" variant="outlined"onChange={(e)=>{setResp(e.target.value)}}/>
-          <FormControlLabel control={<Switch value={pcd} onChange={(e)=>{setPcd(e.target.value)}} />} className="pcd" label="Pcd?" sx={{color:"black"}} />
-        </div>
-        <div><Button onClick={()=>{getDate()}} variant="contained">Cadastrar</Button></div>
+        {!!window.location.pathname.split('/')[2] ? <></>:<div><Button onClick={()=>{setDate()}} variant="contained">Cadastrar</Button></div>}
       </div>
     );
   }

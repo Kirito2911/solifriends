@@ -63,5 +63,6 @@ export async function editData(id, data={}){
 }
 
 export async function deleteData(id){
+  console.log("id",id)
   await deleteDoc(doc(db, "pessoas", id));
 }
